@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TriWeather - by Tribi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to top right, #74ebd5, #ACB6E5);
+      color: #333;
+    }
+
+    .container {
+      background-color: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .weather {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .icon {
+      width: 100px;
+      height: 100px;
+    }
+
+    .btn {
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #4facfe;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #00f2fe;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TriWeather</h1>
+    <p>Descubre el clima donde estés.</p>
+    <button class="btn" onclick="getWeather()">Obtener clima</button>
+    <div class="weather" id="weather"></div>
+    <div class="footer">Hecho con ❤️ por Tribi</div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const apiKey = '237207b4a84bd065b8332c1f04f774f0';
+          const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=es`;
+
+          try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            const icon = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+            const html = `
+              <img class="icon" src="${icon}" alt="icono del clima">
+              <p><strong>${data.name}</strong></p>
+              <p>${data.weather[0].description}</p>
+              <p>${data.main.temp}°C</p>
+            `;
+            document.getElementById('weather').innerHTML = html;
+          } catch (error) {
+            document.getElementById('weather').innerHTML = '<p>No se pudo obtener el clima.</p>';
+          }
+        }, () => {
+          document.getElementById('weather').innerHTML = '<p>Por favor, permite el acceso a la ubicación.</p>';
+        });
+      } else {
+        document.getElementById('weather').innerHTML = '<p>Geolocalización no soportada por tu navegador.</p>';
+      }
+    }
+  </script>
+</body>
+</html>
